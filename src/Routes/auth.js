@@ -1,13 +1,16 @@
 const API_URL = "http://127.0.0.1:8000/"
 
 const loginUser = async (email, password) => {
+    const formData = new URLSearchParams();
+    formData.append("username", email)
+    formData.append("password", password)
     try {
         const response = await fetch (API_URL + "auth/login", {
             method: "POST",
             headers: {
-                "Content-Type": "application/json",
+                "Content-Type": "application/x-www-form-urlencoded",
             },
-            body: JSON.stringify({ email, password })
+            body: formData
         });
         if(!response.ok) {
             const errorData = await response.json();
@@ -15,7 +18,9 @@ const loginUser = async (email, password) => {
             throw new Error(firstError);
         }
         const data = await response.json()
-        localStorage.setItem("token", data.token);
+        localStorage.setItem("token", data.access_token);
+        const token=localStorage.getItem("token");
+        console.log("setting tokenn after login... :", token )
         return data;
     }
     catch (error) {
@@ -40,7 +45,6 @@ const signupUser = async (username, email, password, confirmPassword) => {
             throw new Error(firstError);
         }
         const data = await response.json()
-        localStorage.setItem("token", data.token);
         return data;
     }
     catch (error) {

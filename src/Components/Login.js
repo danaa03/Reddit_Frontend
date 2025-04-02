@@ -3,7 +3,7 @@ import './login.css'
 import {useState} from 'react'
 import {loginUser} from '../Routes/auth'
 
-const Login = ({isLogin, setIsLogin}) => {
+const Login = ({setIsLogin, setIsLoginComp}) => {
    
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -13,8 +13,6 @@ const Login = ({isLogin, setIsLogin}) => {
     }
 
     const handleSubmit = async () => {
-        console.log(email)
-        console.log(password)
 
         if (email === "" || password === "")
         {
@@ -23,9 +21,9 @@ const Login = ({isLogin, setIsLogin}) => {
         }
 
         try {
-            const data = await loginUser(email, password);
+            await loginUser(email, password);
             alert("Login Successful!");
-            console.log("Token:", data.token);
+            setIsLoginComp(false)
         } catch (error) {
             alert("Login Failed: " + error.message);
         }
@@ -38,11 +36,11 @@ const Login = ({isLogin, setIsLogin}) => {
         <h2 className="text-center mb-3">Log In</h2>
 
         <div className="d-grid gap-2 mb-3">
-          <button className="btn btn-outline-secondary rounded-pill d-flex align-items-center justify-content-center gap-2">
-            Continue with Google
+          <button className="btn btn-outline-secondary rounded-pill d-flex align-items-center justify-content-center gap-2 disabled">
+            <img src='/google-logo.png' alt='google icon'/>Continue with Google
           </button>
-          <button className="btn btn-outline-secondary rounded-pill d-flex align-items-center justify-content-center gap-2">
-            Continue with Apple
+          <button className="btn btn-outline-secondary rounded-pill d-flex align-items-center justify-content-center gap-2 disabled">
+            <img src='/mac-os.png' alt='apple icon'/>Continue with Apple
           </button>
         </div>
         <hr className="border-top border-dark"/>
@@ -59,8 +57,6 @@ const Login = ({isLogin, setIsLogin}) => {
         </div>
         <button type="submit" className="btn submit-lgn w-100 rounded-pill">Log In</button>
         </form>
-
-        
       </div>
     </div>
   );

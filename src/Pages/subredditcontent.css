@@ -1,0 +1,16 @@
+.upload-btn {
+    height: 40px;
+}
+
+button:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+.clickable-heading:hover {
+    cursor: pointer;
+    color: rgb(174,44,0);
+}
+/* .customize-trash-can {
+    margin-left: 60%;
+} */

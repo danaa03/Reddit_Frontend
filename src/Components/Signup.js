@@ -41,11 +41,11 @@ const Signup = ({isLogin, setIsLogin}) => {
         <h2 className="text-center mb-3">Sign Up</h2>
 
         <div className="d-grid gap-2 mb-3">
-          <button className="btn btn-outline-secondary rounded-pill d-flex align-items-center justify-content-center gap-2">
-            Continue with Google
+          <button className="btn btn-outline-secondary rounded-pill d-flex align-items-center justify-content-center gap-2 disabled">
+            <img src='/google-logo.png'/>Continue with Google
           </button>
-          <button className="btn btn-outline-secondary rounded-pill d-flex align-items-center justify-content-center gap-2">
-            Continue with Apple
+          <button className="btn btn-outline-secondary rounded-pill d-flex align-items-center justify-content-center gap-2 disabled">
+            <img src='/mac-os.png'/>Continue with Apple
           </button>
         </div>
         <hr className="border-top border-dark"/>
