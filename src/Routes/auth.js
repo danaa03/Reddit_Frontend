@@ -18,10 +18,16 @@ const loginUser = async (email, password) => {
             throw new Error(firstError);
         }
         const data = await response.json()
-        localStorage.setItem("token", data.access_token);
-        const token=localStorage.getItem("token");
-        console.log("setting tokenn after login... :", token )
-        return data;
+        const token = data.access_token;
+
+        const decodedToken = JSON.parse(atob(token.split('.')[1])); 
+
+        console.log("Decoded Token:", decodedToken);
+
+        localStorage.setItem('userRole', decodedToken.role);
+        localStorage.setItem('token', token);
+
+        console.log('Login successful!');
     }
     catch (error) {
         console.error("Login Error: " , error);

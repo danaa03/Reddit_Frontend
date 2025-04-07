@@ -1,7 +1,7 @@
 import React from 'react';
 import './login.css'
 import {useState} from 'react'
-import {signupUser} from '../Routes/auth'
+import {signupUser} from '../../Routes/auth'
 
 const Signup = ({isLogin, setIsLogin}) => {
     const [username, setUsername] = useState("");

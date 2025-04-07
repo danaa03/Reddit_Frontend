@@ -1,11 +1,9 @@
-import Login from '../Components/Login'
-import Signup from '../Components/Signup'
-import SubredditPanel from '../Components/SubredditPanel';
+import SubredditPanel from '../Components/User/SubredditPanel';
 
 const Home = ({ isLogin, setIsLogin, isLoginComp, setIsLoginComp }) => {
     return (
         <div>
-                {isLoginComp ? (
+                {/* {isLoginComp ? (
                 isLogin ? (
                     <Login
                         isLogin={isLogin}
@@ -21,9 +19,9 @@ const Home = ({ isLogin, setIsLogin, isLoginComp, setIsLoginComp }) => {
                         setIsLoginComp={setIsLoginComp}
                     />
                 )
-            ) : (
+            ) : ( */}
                 <SubredditPanel />
-            )}
+            {/* )} */}
                 
         </div>
     )

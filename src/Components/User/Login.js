@@ -1,10 +1,11 @@
 import React from 'react';
 import './login.css'
 import {useState} from 'react'
-import {loginUser} from '../Routes/auth'
+import { useNavigate } from 'react-router-dom';
+import {loginUser} from '../../Routes/auth'
 
 const Login = ({setIsLogin, setIsLoginComp}) => {
-   
+    const navigate = useNavigate();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     
@@ -23,7 +24,11 @@ const Login = ({setIsLogin, setIsLoginComp}) => {
         try {
             await loginUser(email, password);
             alert("Login Successful!");
+            if(localStorage.getItem("userRole") === "admin"){
+                navigate("/admin/dashboard");
+            }
             setIsLoginComp(false)
+            window.location.reload()
         } catch (error) {
             alert("Login Failed: " + error.message);
         }

@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { topFiftyPosts, nameById } from '../Routes/subreddits';
-import { getUsername } from '../Routes/users';
-import { handleUpvote } from '../Routes/posts';
-import PostCard from '../Components/PostCard';
+import { topFiftyPosts, nameById } from '../../Routes/subreddits';
+import { getUsername } from '../../Routes/users';
+import { handleUpvote } from '../../Routes/posts';
+import PostCard from './PostCard';
 import './votestyle.css';
 
 const Subreddit = () => {

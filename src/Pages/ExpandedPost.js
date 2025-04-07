@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { postById, handleDownvote, handleUpvote } from "../Routes/posts";
+import { postById, handleDownvote, handleUpvote , checkVoteStatus} from "../Routes/posts";
 import { addComment, viewComments, upvoteComment, downvoteComment } from "../Routes/comments";
-import ModalLogin from "../Components/ModalLogin";
+import ModalLogin from "../Components/User/ModalLogin"
 import { getUsername } from "../Routes/users";
 import "./expandedpost.css";
 
@@ -17,6 +17,7 @@ const Post = () => {
     const [showLogin, setShowLogin] = useState(false);
     const [isLogin, setIsLogin] = useState(true);
     const [commentUsername, setCommentUsername] = useState([]);
+    const [voteStatus, setVoteStatus] = useState(null); //can either be upvote, downvote or null
 
     useEffect(() => {
         const fetchPost = async () => {
@@ -34,6 +35,8 @@ const Post = () => {
             }
         };
         fetchPost();
+        checkVote(post_id);
+        console.log("HSHSH: ",voteStatus)
     }, [post_id]);
 
     useEffect(() => {
@@ -63,18 +66,20 @@ const Post = () => {
         setComments(updatedComments);
     };
 
-    const addUpvote = async (post_id) => {
+    const addUpvote = async (post_id) => { //post
         if (!handleUnauthenticatedAction()) return;
         await handleUpvote(post.id);
         const data = await postById(post_id);
         setPost(data.post || {});
+        window.location.reload(); 
     };
 
-    const addDownvote = async (post_id) => {
+    const addDownvote = async (post_id) => { //post
         if (!handleUnauthenticatedAction()) return;
         await handleDownvote(post.id);
         const data = await postById(post_id);
         setPost(data.post || {});
+        window.location.reload(); 
     };
 
     const createComment = async (post_id) => {
@@ -93,6 +98,16 @@ const Post = () => {
         return true;
     };
 
+    const checkVote = async(post_id) => {
+        try {
+            const response = await checkVoteStatus(post_id);
+            setVoteStatus(response.vote_type);
+            console.log("Vote statusssssssssss: ", response.vote_type);
+        } catch (error) {
+            console.error("Error checking vote status:", error.message);
+        }
+    }
+
     return (
         <div className="d-flex justify-content-center align-items-start min-vh-100 bg-light p-3">
             <div className="card p-4 shadow rounded-4" style={{ maxWidth: "600px", width: "100%" }}>
@@ -104,21 +119,32 @@ const Post = () => {
                 )}
 
                 <div className="d-flex align-items-center mt-3">
-                <button className="btn btn-success button"  onClick={() => {
-                                    if (!handleUnauthenticatedAction()) return;
-                                    console.log('authorized upvote...')
-                                    addUpvote(post.id)
-                                }} >
-                    <i className="fas fa-thumbs-up"></i>
-                </button>
+                {voteStatus !== null && (
+                    <button
+                        className={`btn ${voteStatus === 'upvote' ? 'btn btn-success' : 'btn border-success'}`}
+                        onClick={() => {
+                            if (!handleUnauthenticatedAction()) return;
+                            console.log('authorized upvote...');
+                            addUpvote(post.id);
+                        }}
+                    >
+                        <i className="fas fa-thumbs-up"></i>
+                    </button>
+                )}
                 <span className='ms-2 me-3'>{post.upvotes}</span>
-                <button className="btn btn-danger button"  onClick={() => {
-                                    if (!handleUnauthenticatedAction()) return;
-                                    console.log('authorized upvote...')
-                                    addDownvote(post.id)
-                                }} >
-                    <i className="fas fa-thumbs-down"></i>
-                </button>
+
+                {voteStatus !== null && (
+                    <button
+                        className={`btn ${voteStatus === 'downvote' ? 'btn btn-danger' : 'btn border-danger'}`}
+                        onClick={() => {
+                            if (!handleUnauthenticatedAction()) return;
+                            console.log('authorized downvote...');
+                            addDownvote(post.id);
+                        }}
+                    >
+                        <i className="fas fa-thumbs-down"></i>
+                    </button>
+                )}
                 <span className='ms-2 me-3'>{post.downvotes}</span>
                 </div>
                 <div className="d-flex mt-3">

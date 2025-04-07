@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { topFiftyPosts, nameById } from '../Routes/subreddits';
+import { topFiftyPosts, detailsById } from '../Routes/subreddits';
 import { getUsername } from '../Routes/users';
 import { handleUpvote, handleDownvote } from '../Routes/posts';
 import './subredditcontent.css'
-import ModalLogin from '../Components/ModalLogin';
+import ModalLogin from '../Components/User/ModalLogin';
 import {uploadPost} from '../Routes/posts'
 import {addComment} from '../Routes/comments'
 import { useNavigate } from 'react-router-dom';
@@ -26,8 +26,9 @@ const Subreddit = () => {
     const [commentContent, setCommentContent] = useState("");
 
     const handleFileChange = (e) => {
-        setSelectedFiles(Array.from(e.target.files)); 
+        setSelectedFiles((prevFiles) => [...prevFiles, ...Array.from(e.target.files)]);
     };
+    
 
     const handleUpload = async (e) => {
         e.preventDefault();
@@ -88,8 +89,8 @@ const Subreddit = () => {
 
     const fetchNameById = async (id) => {
         try {
-            const response = await nameById(id);
-            return response.subreddit;
+            const response = await detailsById(id);
+            return response.name;
         } catch (err) {
             console.error("Error fetching subreddit name: ", err);
             return "Unknown Subreddit";
@@ -171,56 +172,118 @@ const Subreddit = () => {
         fetchPosts();
     }, [subreddit_id]);
 
+    const handleDrop = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const droppedFiles = e.dataTransfer.files;
+        handleFileChange({ target: { files: droppedFiles } });
+    };
+
+    const handleDragOver = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+    };
+
+    const renderFileNames = () => {
+        if (selectedFiles.length === 0) return null;
+        return (
+            <ul className='list-group'>
+                {selectedFiles.map((file, index) => (
+                    <li className='list-group-item' key={index}>{file.name}</li>
+                ))}
+            </ul>
+        );
+    };
+
     if (loading) return <div className="container mt-4">Loading posts...</div>;
     if (error) return <div className="container mt-4 text-danger">{error}</div>;
 
     return (
         <div className="container mt-4 ms-4">
             <h2>{subredditName}</h2>
-            <form onSubmit={handleUpload}>
-                <input id = "title" type="text" className='bg-light rounded-pill mt-4 border-0 form-control w-50' placeholder="Add Post Title"  onChange={(e) => setTitle(e.target.value)} value={title} 
-                    onClick={() => {
-                                        if (!handleUnauthenticatedAction()) return;
-                                    }}/>
-                <input id="content" type="text" className='bg-light rounded-pill mt-1 mb-2 border-0 form-control w-50' placeholder="Add Post Content"  onChange={(e) => setContent(e.target.value)} value={content}
-                    onClick={() => {
-                                        if (!handleUnauthenticatedAction()) return;
-                                    }}/>
-                <div className='mb-2 d-flex'>
-                    <input className="btn btn-light" type="file" multiple onChange={handleFileChange} onClick={() => {
-                                    if (!handleUnauthenticatedAction()) return;
-        
-                                }}/>
+            <form onSubmit={handleUpload} className="card p-3 shadow border-0 rounded bg-white w-50 mt-5 mb-5">
+            <h5 className="text-dark mb-3 ms-1">Create a Post</h5>
 
-                    <button className="btn btn-dark rounded-2 ms-2 upload-btn" >
-                        Upload
-                    </button>
-                </div>
-            </form>
+            <div className="mb-2">
+                <input
+                    id="title"
+                    type="text"
+                    className="form-control border-0 bg-light rounded-pill px-3"
+                    placeholder="Title (required)"
+                    onChange={(e) => setTitle(e.target.value)}
+                    value={title}
+                    style={{ backgroundColor: "#F6F7F8", color: "#000" }}
+                />
+            </div>
+            <div className="mb-2">
+                <textarea
+                    id="content"
+                    className="form-control border-0 rounded px-3 py-2"
+                    placeholder="What’s on your mind?"
+                    rows="4"
+                    onChange={(e) => setContent(e.target.value)}
+                    value={content}
+                    style={{ backgroundColor: "#F6F7F8", color: "#000" }}
+                ></textarea>
+            </div>
+            <div
+                className="mb-2 p-3 border border-secondary-subtle rounded text-center"
+                style={{ backgroundColor: "#F6F7F8", color: "#000" }}
+                onDrop={handleDrop}
+                onDragOver={handleDragOver}
+            >
+                <label className="fw-light">
+                    Drag & drop images or{" "}
+                    <span
+                        className="text-primary fw-bold"
+                        onClick={() => document.getElementById("fileInput").click()}
+                    >
+                        browse
+                    </span>
+                </label>
+                <input
+                    type="file"
+                    id="fileInput"
+                    className="d-none"
+                    multiple
+                    onChange={handleFileChange}
+                />
+                {renderFileNames()}
+            </div>
+
+            <button
+                type="submit"
+                className="btn w-100 fw-bold rounded-pill"
+                style={{ backgroundColor: "#FF4500", color: "#FFF" }}
+            >
+                Post
+            </button>
+        </form>
+
      
-            <div className="d-flex flex-column gap-3">
-                {posts.map((p, index) => (
-                    <div key={p.id || index} className="card mb-4 w-50">
-                        <div className="card-body">  
-                            <div className='d-flex'>
-                                <h5 className="card-title clickable-heading" onClick={() => redirectToPost(p.id)}>{p.title}</h5>
-                                {/* <button className="btn btn-light customize-trash-can" onClick={() => {
+        <div className="d-flex flex-column gap-3">
+            {posts.map((p, index) => (
+                <div key={p.id || index} className="card mb-4 w-50">
+                    <div className="card-body">  
+                        <div className='d-flex'>
+                            <h5 className="card-title clickable-heading" onClick={() => redirectToPost(p.id)}>{p.title}</h5>
+                            {/* <button className="btn btn-light customize-trash-can" onClick={() => {
                                     if (!handleUnauthenticatedAction()) return;
                                     console.log('authorized delete...')
                                     deletePost(p.id)
                                 }} >
                                     <i className="fa-solid fa-trash-can"></i>
                                 </button> */}
-                            </div>
-                            <span className='text-muted'>{"u/"+usernames[p.user_id] || "Loading username..."}</span>
-                            <p className="card-text">{p.content}</p>
-                            {p.image_url && (
-                                <img
-                                    className="img-fluid rounded"
-                                    src={`http://127.0.0.1:8000/images/${p.image_url.split(',')[0].trim()}`}
-                                    alt="Post visual"
-                                />
-                            )}
+                        </div>
+                        <span className='text-muted'>{"u/"+usernames[p.user_id] || "Loading username..."}</span>
+                        <p className="card-text">{p.content}</p>
+                        {p.image_url && (
+                            <img
+                                className="img-fluid rounded"
+                                src={`http://127.0.0.1:8000/images/${p.image_url.split(',')[0].trim()}`}
+                                alt="Post visual"
+                            />
+                        )}
                             <div className='d-flex align-items-center mt-2'>
                                 <button className="btn btn-success button"  onClick={() => {
                                     if (!handleUnauthenticatedAction()) return;

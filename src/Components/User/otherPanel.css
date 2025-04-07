@@ -1,0 +1,45 @@
+.floating-card {
+    position: absolute;
+    top: 90px;
+    right: 70%;  
+    width: 250px;
+    background: #f8f9fa;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    font-size: 14px;
+}
+.floating-card h6 {
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 10px;
+}
+
+.floating-card ul {
+    padding: 0;
+}
+
+.floating-card li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 0;
+    font-weight: 500;
+    transition: background 0.2s ease-in-out;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.floating-card li:hover {
+    background: #e9ecef;
+}
+
+.floating-card p {
+    margin: 0;
+    font-size: 13px;
+}
+
+.floating-card .text-muted {
+    font-size: 12px;
+    color: #6c757d;
+}
